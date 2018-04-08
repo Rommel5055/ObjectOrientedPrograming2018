@@ -1,0 +1,8 @@
+mystery(2,25) = 50
+mysyery(3,11) = 33
+
+mystery(a,b) = a*b
+
+newMystery(2,25) = 33554432
+newMystery(3,11) = 177147
+newMystery(a,b) -> a^b
