@@ -1,0 +1,1 @@
+It calculates the cube of every number from 1 to N, with N being the input number
