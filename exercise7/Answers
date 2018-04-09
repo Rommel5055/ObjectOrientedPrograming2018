@@ -1,0 +1,29 @@
+1.- 
+  01) Print "No, I " 
+  02) Go to zoop()
+  03) Go to baffle()
+  04)Print "wug"
+  05) Go to ping
+  06) Print "." New line.
+  07) Return to baffle(), it ended so return to zoop()
+  08) Print "You wugga "
+  09) Go to baffle()
+  10) Print "wug"
+  11) Go to ping
+  12) Print "." New line.
+  13) Return to baffle(), it ended so return to zoop, which also ended, so return to main
+  14) Print "I "
+  15) Go to baffle()
+  16) Print "wug"
+  17) Go to ping
+  18) Print "." New line.
+  19) Return to baffle(), it ended so return to main
+  20)The end.
+  
+No, I wug.
+You wugga wug.
+I wug.
+
+2.- 
+
+3.- If baffle() is invoked at the end of the ping() method, then it generates an infinte loop, as at the end of baffle(), ping() is invoked.
