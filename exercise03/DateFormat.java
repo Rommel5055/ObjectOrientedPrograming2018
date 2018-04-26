@@ -71,6 +71,7 @@ public class DateFormat {
 		int ldm;
 		
 		mm--;
+		dw--;
 		//Meses con 31 dias
 		if ((mm < 7 && mm % 2 == 0) || (mm >= 7 && mm % 2 == 1)){
 			ldm = 31;
@@ -78,7 +79,7 @@ public class DateFormat {
 		
 		//Febrero
 		else if (mm == 1){
-			if ((yy/100 == 0 && yy/400 == 0) || (yy/100 != 0 && yy/4 == 0)){ // Año bisiesto
+			if ((yy%100 == 0 && yy%400 == 0) || (yy%100 != 0 && yy%4 == 0)){ // Año bisiesto
 				ldm = 29;
 			}
 			else{
@@ -93,6 +94,13 @@ public class DateFormat {
 		
 		//Mostrar dias restantes
 		for (int cdd = dd + 1; cdd <= ldm; cdd++){
+			if(dw >= 6){
+				dw = 0;
+			}
+			else{
+				dw++;
+			}
+			dayOfWeek = daysOfWeek.get(dw);
 			if (userInput == 0){
 				System.out.printf("American Format: \n%s, %s %d, %d \n", dayOfWeek, month, cdd, yy);
 			}
