@@ -13,15 +13,15 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  
 public class Assistant {
 	
-	//Se declaran los sonidos que se usaran en el programa
-	String fileRing = "default/sounds/electronics023.wav"; // Audio de llamada telefonica
-	String fileCameraShutter = "default/sounds/electronics026.wav"; // Audio de camara fotografica, que sera usado en las noticias
+	//Sounds which shall be used
+	String fileRing = "default/sounds/electronics023.wav"; //Ringtone
+	String fileCameraShutter = "default/sounds/electronics026.wav"; //Camera Shuttle sound to be used when there are new news (What is the sound of news anyway?)
 	static Clip soundClipRing;
 	static Clip soundClipCameraShutter;  
 	
 	public Assistant(){
 		try {
-			/*Verificar que todo funcione respecto a los audios que se usaran */
+			/*Check the sounds exist and there won't have problems */
 			   URL url = this.getClass().getClassLoader().getResource(fileRing);
 			   if (url == null) {
 			      System.err.println("Couldn't find file: " + fileRing);
