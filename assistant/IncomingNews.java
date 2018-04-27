@@ -1,11 +1,18 @@
 package assistant;
 
 public class IncomingNews {
-	public String title;
-	public boolean isRead;
+	private String title;
+	private boolean isRead;
 	
-	public void newNews(String newsTitle, boolean read){
+	public IncomingNews(String newsTitle, boolean read){
 		title = newsTitle;
 		isRead = read;
+	}
+	
+	public String getTitle(){
+		return title;
+	}
+	public boolean isRead(){
+		return isRead;
 	}
 }

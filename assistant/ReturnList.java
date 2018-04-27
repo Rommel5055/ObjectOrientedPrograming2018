@@ -10,10 +10,10 @@ import java.io.*;
 
 public class ReturnList {
 	/*Class created to return one or more lists at once*/
-	public static List<Object> listObjectMissedNews;
-	public static List<String> listStringNews;
-	public static List<Object> listObjectCalls;
-	public static List<Object> listObjectMissedCalls;
+	private static List<Object> listObjectMissedNews;
+	private static List<String> listStringNews;
+	private static List<Object> listObjectCalls;
+	private static List<Object> listObjectMissedCalls;
 	/**************************************************/
 	public ReturnList(){
 		listObjectMissedNews = new ArrayList<Object>();
@@ -24,27 +24,27 @@ public class ReturnList {
 	
 	public void checkMissed(User mySelf){
 		if ((listObjectMissedCalls.size() > 0) &&
-				mySelf.available == true){
+				mySelf.currentStatus() == true){
 			for (int j = 0; j < listObjectMissedCalls.size(); j++){
 				/*If there are missed calls and the user is avaliable then shows the missed calls
 				 *At the end, it will delete all missed calls from the list, therefore it is only shown
 				 *when the user changes his status*/
 				IncomingCalls call = (IncomingCalls) listObjectMissedCalls.get(j);
-				String callersName = call.callersName;
-				int callersNumber = call.callersNumber;
+				String callersName = call.getName();
+				int callersNumber = call.getNumber();
 				System.out.printf("Missed call from: %s (%d) \n", callersName, callersNumber);
 				listObjectMissedCalls = new ArrayList<Object>();
 				/***************************************************************************************/
 			}
 		}
 		
-		if (listObjectMissedNews.size() > 0 && mySelf.available == true){
+		if (listObjectMissedNews.size() > 0 && mySelf.currentStatus() == true){
 			for (int k = 0; k < listObjectMissedNews.size(); k++){
 				/*If there are missed news and the user is avaliable then shows the missed news
 				 *At the end, it will delete all missed news from the list, therefore it is only shown
 				 *when the user changes his status*/
 				IncomingNews missedNew = (IncomingNews) listObjectMissedNews.get(k);
-				String title = missedNew.title;
+				String title = missedNew.getTitle();
 				System.out.printf("Missed News: %s \n", title);
 				listObjectMissedNews = new ArrayList<Object>();
 				/****************************************************************************************/
@@ -58,14 +58,13 @@ public class ReturnList {
 			/*If there are still avaliable news, then it picks one randomly. Then, the
 			 *picked news is deleted from the main news list to avoid getting duplicates*/
 			int randomNews = rand.nextInt(listStringNews.size());
-			IncomingNews newNew = new IncomingNews();
-			newNew.newNews(listStringNews.get(randomNews), false); // false meant it had not yet been read. However, this is just a leftover and is unused. It might be important in a future update 
+			IncomingNews newNew = new IncomingNews(listStringNews.get(randomNews), false);// false meant it had not yet been read. However, this is just a leftover and is unused. It might be important in a future update
 			listStringNews.remove(randomNews); // Avoid getting repeated news
 			
-			if (mySelf.available == true){
+			if (mySelf.currentStatus() == true){
 				/*If the user is available, then it will be shown. */
 				System.out.printf("Breaking News!\n");
-				System.out.printf("%s \n", newNew.title);
+				System.out.printf("%s \n", newNew.getTitle());
 				
 				if (soundClipCameraShutter.isRunning()) soundClipCameraShutter.stop();
 				soundClipCameraShutter.setFramePosition(0); // rewind to the beginning
@@ -87,8 +86,8 @@ public class ReturnList {
 		IncomingCalls newCall = (IncomingCalls) listObjectCalls.get(randomCalls);
 		/**************************************************/
 		
-		if (mySelf.available == true){//Notify the user of incoming call if he is avaliable
-			System.out.printf("%s (%d) is calling. \n", (String)newCall.callersName, (int)newCall.callersNumber);
+		if (mySelf.currentStatus() == true){//Notify the user of incoming call if he is avaliable
+			System.out.printf("%s (%d) is calling. \n", (String)newCall.getName(), (int)newCall.getNumber());
 			if (soundClipRing.isRunning()) soundClipRing.stop();
 			soundClipRing.setFramePosition(0); // rewind to the beginning
 			soundClipRing.start();
@@ -176,4 +175,17 @@ public class ReturnList {
         }
         /********************/
     }
+
+	public List<Object> retlistObjectMissedNews(){
+		return listObjectMissedNews;
+	}
+	public List<String> listStringNews(){
+		return listStringNews;
+	}
+	public List<Object> retlistObjectCalls(){
+		return listObjectCalls;
+	}
+	public List<Object> retlistObjectMissedCalls(){
+		return listObjectMissedCalls;
+	}
 }

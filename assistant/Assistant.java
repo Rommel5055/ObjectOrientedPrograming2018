@@ -94,7 +94,7 @@ public class Assistant {
 				/***********************************************************************/
 			}
 			else{
-				if (mySelf.available){
+				if (mySelf.currentStatus()){
 					System.out.println("Nothing happened in this itteration.");
 				}
 			}

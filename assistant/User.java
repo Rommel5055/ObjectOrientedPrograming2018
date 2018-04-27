@@ -3,7 +3,7 @@ package assistant;
 import java.util.Scanner;
 
 public class User {
-	public boolean available = true;
+	private boolean available = true;
 	
 	public void changeStatus(){
 		if (available == true){
@@ -37,8 +37,11 @@ public class User {
 			/****************************************************/
 		}
 		
+		
 	}
-	
+	public boolean currentStatus(){
+		return available;
+	}
 	
 	
 	
