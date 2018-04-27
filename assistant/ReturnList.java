@@ -3,17 +3,20 @@ package assistant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import javax.sound.sampled.Clip;
+
 import java.io.*;
 
 public class ReturnList {
 	/*Class created to return one or more lists at once*/
-	public List<Object> listObjectMissedNews;
-	public List<String> listStringNews;
+	public static List<Object> listObjectMissedNews;
+	public static List<String> listStringNews;
 	public List<Object> listObjectCalls;
-	public List<Object> listObjectMissedCalls;
+	public static List<Object> listObjectMissedCalls;
 	/**************************************************/
 	
-	public ReturnList checkMissed(List<Object> missedCalls, List<Object> missedNews, User mySelf, ReturnList returnList){
+	public void checkMissed(List<Object> missedCalls, List<Object> missedNews, User mySelf){
 		if ((missedCalls.size() > 0) && mySelf.available == true){
 			for (int j = 0; j < missedCalls.size(); j++){
 				/*If there are missed calls and the user is avaliable then shows the missed calls
@@ -23,13 +26,13 @@ public class ReturnList {
 				String callersName = call.callersName;
 				int callersNumber = call.callersNumber;
 				System.out.printf("Missed call from: %s (%d) \n", callersName, callersNumber);
-				returnList.listObjectMissedCalls = new ArrayList<Object>();
+				listObjectMissedCalls = new ArrayList<Object>();
 				/***************************************************************************************/
 			}
 		}
 		else{
 			/*Returns unchanged missedCalls list*/
-			returnList.listObjectMissedCalls = missedCalls;
+			listObjectMissedCalls = missedCalls;
 		}
 		if (missedNews.size() > 0 && mySelf.available == true){
 			for (int k = 0; k < missedNews.size(); k++){
@@ -39,18 +42,17 @@ public class ReturnList {
 				IncomingNews missedNew = (IncomingNews) missedNews.get(k);
 				String title = missedNew.title;
 				System.out.printf("Missed News: %s \n", title);
-				returnList.listObjectMissedNews = new ArrayList<Object>();
+				listObjectMissedNews = new ArrayList<Object>();
 				/****************************************************************************************/
 			}
 		}
 		else{
 			/*Returns unchanged missedCalls list*/
-			returnList.listObjectMissedNews = missedNews;
+			listObjectMissedNews = missedNews;
 		}
-		return returnList; 		
 	}
 	
-	public static ReturnList ifNews(List<String> news, Random rand, User mySelf, List<Object> missedNews, ReturnList retList){
+	public static void ifNews(List<String> news, Random rand, User mySelf, List<Object> missedNews, Clip soundClipCameraShutter){
 		if (news.size() > 0){
 			/*If there are still avaliable news, then it picks one randomly. Then, the
 			 *picked news is deleted from the main news list to avoid getting duplicates*/
@@ -63,6 +65,10 @@ public class ReturnList {
 				/*If the user is available, then it will be shown. */
 				System.out.printf("Breaking News!\n");
 				System.out.printf("%s \n", newNew.title);
+				
+				if (soundClipCameraShutter.isRunning()) soundClipCameraShutter.stop();
+				soundClipCameraShutter.setFramePosition(0); // rewind to the beginning
+				soundClipCameraShutter.start();
 				/**************************************************/
 			}
 			else{
@@ -72,12 +78,11 @@ public class ReturnList {
 			}
 			/*****************************************************************************/
 		}
-	retList.listStringNews = news; //Update list of news, after one of them might have been deleted
-	retList.listObjectMissedNews = missedNews; //Update list of missed news, after there might have been added a new news
-	return retList;
+	listStringNews = news; //Update list of news, after one of them might have been deleted
+	listObjectMissedNews = missedNews; //Update list of missed news, after there might have been added a new news
 	}
 	
-	public static ReturnList ifCall(Random rand, List<Object> calls, User mySelf, List<Object> missedCalls, ReturnList retList){
+	public static void ifCall(Random rand, List<Object> calls, User mySelf, List<Object> missedCalls, Clip soundClipRing){
 		/*Select incoming call from list of possible calls*/
 		int randomCalls = rand.nextInt(calls.size());
 		IncomingCalls newCall = (IncomingCalls) calls.get(randomCalls);
@@ -85,18 +90,22 @@ public class ReturnList {
 		
 		if (mySelf.available == true){//Notify the user of incoming call if he is avaliable
 			System.out.printf("%s (%d) is calling. \n", (String)newCall.callersName, (int)newCall.callersNumber);
+			if (soundClipRing.isRunning()) soundClipRing.stop();
+			soundClipRing.setFramePosition(0); // rewind to the beginning
+			soundClipRing.start();
+			
+			
 		} 
 		else{
 			/*Don't notify the user of an incoming call if he is busy
 			 *Add the call to the missed calls list instead*/
 			missedCalls.add(newCall);
-			retList.listObjectMissedCalls = missedCalls;
+			listObjectMissedCalls = missedCalls;
 			/*****************************************************/
 		}
-		return retList;
 	}
 	
-	public ReturnList CreateCalls(ReturnList retList){
+	public void CreateCalls(ReturnList retList){
 		String fileName = "src\\assistant\\calls.txt";
         String line = null;
         List<Object> calls = new ArrayList<Object>();
@@ -134,10 +143,9 @@ public class ReturnList {
             	ex.printStackTrace();
         }
         /*********************/
-        return retList;
     }
 	
-	public ReturnList CreateNews(ReturnList retList){
+	public void CreateNews(ReturnList retList){
 		String fileName = "src\\assistant\\news.txt";
         String line = null;
         List<String> news = new ArrayList<String>();
@@ -151,7 +159,7 @@ public class ReturnList {
             while((line = bufferedReader.readLine()) != null) {
             news.add(line);
             }   
-            retList.listStringNews = news;
+            listStringNews = news;
             bufferedReader.close();    
             /**********************************************************/
         }
@@ -169,6 +177,5 @@ public class ReturnList {
                 ex.printStackTrace();
         }
         /********************/
-        return retList;
     }
 }

@@ -1,45 +1,65 @@
 package assistant;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-public class Assistant {
 
-	public static User changeStatus(Scanner reader, User mySelf){
-		if (mySelf.available == true){
-			/*Option to change user status from available to busy*/
-			System.out.printf("Your status is available. Would you like to change it? (1 = Yes / 0 = No) \n");
-			int userAnswer = reader.nextInt();
-			if (userAnswer == 1){
-				mySelf.changeStatus();
-				System.out.printf("Your new status is busy. \n");
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+ 
+public class Assistant {
+	
+	//Se declaran los sonidos que se usaran en el programa
+	String fileRing = "default/sounds/electronics023.wav"; // Audio de llamada telefonica
+	String fileCameraShutter = "default/sounds/electronics026.wav"; // Audio de camara fotografica, que sera usado en las noticias
+	static Clip soundClipRing;
+	static Clip soundClipCameraShutter;  
+	
+	public Assistant(){
+		try {
+			/*Verificar que todo funcione respecto a los audios que se usaran */
+			   URL url = this.getClass().getClassLoader().getResource(fileRing);
+			   if (url == null) {
+			      System.err.println("Couldn't find file: " + fileRing);
+			   } else {
+			      AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+			      soundClipRing = AudioSystem.getClip();
+			      soundClipRing.open(audioIn);
+			   }
+			       
+			   url = this.getClass().getClassLoader().getResource(fileCameraShutter);
+			   if (url == null) {
+			      System.err.println("Couldn't find file: " + fileCameraShutter);
+			   } else {
+			      AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+			      soundClipCameraShutter = AudioSystem.getClip();
+			      soundClipCameraShutter.open(audioIn);
+			   }
+			} catch (UnsupportedAudioFileException e) {
+			   System.err.println("Audio Format not supported!");
+			} catch (Exception e) {
+			   e.printStackTrace();
 			}
-			/***************************************************/
-		}
-		else{
-			/*Option to change user status from busy to avaliable*/
-			System.out.printf("Are you still busy? (1 = Yes / 0 = No) \n");
-			int userAnswer = reader.nextInt();
-			if (userAnswer == 0){
-				mySelf.changeStatus();
-				System.out.printf("You are now available.\n");
-			}
-			/****************************************************/
-		}
-		return mySelf;
 	}
 	
-	public static void main(String[] args) {
+	@SuppressWarnings("static-access")
+	public static void main(String[] args){
 		int numberOfCicles = Integer.parseInt(args[0]);
-		
+		new Assistant();
 		Random rand = new Random();
 		User mySelf = new User();
 		Scanner reader = new Scanner(System.in);
 		ReturnList retList = new ReturnList();
 		
+		
+		
 		/*Creates Lists of both calls and news for the assistant */
-		retList = retList.CreateCalls(retList);
-		retList = retList.CreateNews(retList);
+		retList.CreateCalls(retList);
+		retList.CreateNews(retList);
 		List<Object> calls = retList.listObjectCalls;
 		List<String> news = retList.listStringNews;
 		/*********************************************************/
@@ -54,14 +74,14 @@ public class Assistant {
 			 * avaliable then the assistant will show all missed items
 			 * and then delete them, so it doesn't get printed more 
 			 * than once*/ 
-			retList = retList.checkMissed(missedCalls, missedNews, mySelf, retList);
+			retList.checkMissed(missedCalls, missedNews, mySelf);
 			missedCalls = retList.listObjectMissedCalls;
 			missedNews = retList.listObjectMissedNews;
 			/**********************************************************/
 			
 			/*Asks the user if he is still busy or avaliable and changes the status 
 			 * of user according to the user input*/
-			mySelf = changeStatus(reader, mySelf);
+			mySelf.checkStatus(reader);
 			/*********************************************************/
 			
 			/*Generates a random number from 0 to 2. 
@@ -74,18 +94,22 @@ public class Assistant {
 			if (randomN == 0){//News
 				/*There are new news
 				 *Show new news
-				 *If user is busy, then add it to missed News and uopdate that list instead*/
-				ReturnList.ifNews(news, rand, mySelf, missedNews, retList);
+				 *If user is busy, then add it to missed News and update that list instead*/
+				ReturnList.ifNews(news, rand, mySelf, missedNews, soundClipCameraShutter);
 				news = retList.listStringNews;
 				missedNews = retList.listObjectMissedNews;
+					
 				/***************************************************************************/
 			}
 			else if (randomN == 1){//Calls
 				/*There are new calls
 				 *If the user is busy, add the call to missed calls and update the list*/
-				retList = ReturnList.ifCall(rand, calls, mySelf, missedCalls, retList);
+				ReturnList.ifCall(rand, calls, mySelf, missedCalls, soundClipRing);
 				missedCalls = retList.listObjectMissedCalls;
 				/***********************************************************************/
+			}
+			else{
+				System.out.println("Nothing happened in this itteration.");
 			}
 		}
 		/*Notify about last iteration so it doesn't end abruptly*/
