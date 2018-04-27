@@ -109,7 +109,9 @@ public class Assistant {
 				/***********************************************************************/
 			}
 			else{
-				System.out.println("Nothing happened in this itteration.");
+				if (mySelf.available){
+					System.out.println("Nothing happened in this itteration.");
+				}
 			}
 		}
 		/*Notify about last iteration so it doesn't end abruptly*/
