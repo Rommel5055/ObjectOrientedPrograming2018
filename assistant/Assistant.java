@@ -1,7 +1,5 @@
 package assistant;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -46,7 +44,6 @@ public class Assistant {
 			}
 	}
 	
-	@SuppressWarnings("static-access")
 	public static void main(String[] args){
 		int numberOfCicles = Integer.parseInt(args[0]);
 		new Assistant();
@@ -58,25 +55,16 @@ public class Assistant {
 		
 		
 		/*Creates Lists of both calls and news for the assistant */
-		retList.CreateCalls(retList);
-		retList.CreateNews(retList);
-		List<Object> calls = retList.listObjectCalls;
-		List<String> news = retList.listStringNews;
+		retList.CreateCalls();
+		retList.CreateNews();
 		/*********************************************************/
 		
-		/*Declare lists which will be filled with missed calls and news, 
-		 * when the use is "busy"*/
-		List<Object> missedCalls = new ArrayList<Object>();
-		List<Object> missedNews = new ArrayList<Object>();
-		/**********************************************************/
 		for(int i = 0; i < numberOfCicles; i++){
 			/*Checks for missed calls and missed news. If the user is
 			 * avaliable then the assistant will show all missed items
 			 * and then delete them, so it doesn't get printed more 
 			 * than once*/ 
-			retList.checkMissed(missedCalls, missedNews, mySelf);
-			missedCalls = retList.listObjectMissedCalls;
-			missedNews = retList.listObjectMissedNews;
+			retList.checkMissed(mySelf);
 			/**********************************************************/
 			
 			/*Asks the user if he is still busy or avaliable and changes the status 
@@ -95,17 +83,14 @@ public class Assistant {
 				/*There are new news
 				 *Show new news
 				 *If user is busy, then add it to missed News and update that list instead*/
-				ReturnList.ifNews(news, rand, mySelf, missedNews, soundClipCameraShutter);
-				news = retList.listStringNews;
-				missedNews = retList.listObjectMissedNews;
+				ReturnList.ifNews(rand, mySelf, soundClipCameraShutter);
 					
 				/***************************************************************************/
 			}
 			else if (randomN == 1){//Calls
 				/*There are new calls
 				 *If the user is busy, add the call to missed calls and update the list*/
-				ReturnList.ifCall(rand, calls, mySelf, missedCalls, soundClipRing);
-				missedCalls = retList.listObjectMissedCalls;
+				ReturnList.ifCall(rand, mySelf, soundClipRing);
 				/***********************************************************************/
 			}
 			else{

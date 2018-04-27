@@ -12,17 +12,24 @@ public class ReturnList {
 	/*Class created to return one or more lists at once*/
 	public static List<Object> listObjectMissedNews;
 	public static List<String> listStringNews;
-	public List<Object> listObjectCalls;
+	public static List<Object> listObjectCalls;
 	public static List<Object> listObjectMissedCalls;
 	/**************************************************/
+	public ReturnList(){
+		listObjectMissedNews = new ArrayList<Object>();
+		listStringNews = new ArrayList<String>();
+		listObjectCalls = new ArrayList<Object>();
+		listObjectMissedCalls = new ArrayList<Object>();
+	}
 	
-	public void checkMissed(List<Object> missedCalls, List<Object> missedNews, User mySelf){
-		if ((missedCalls.size() > 0) && mySelf.available == true){
-			for (int j = 0; j < missedCalls.size(); j++){
+	public void checkMissed(User mySelf){
+		if ((listObjectMissedCalls.size() > 0) &&
+				mySelf.available == true){
+			for (int j = 0; j < listObjectMissedCalls.size(); j++){
 				/*If there are missed calls and the user is avaliable then shows the missed calls
 				 *At the end, it will delete all missed calls from the list, therefore it is only shown
 				 *when the user changes his status*/
-				IncomingCalls call = (IncomingCalls) missedCalls.get(j);
+				IncomingCalls call = (IncomingCalls) listObjectMissedCalls.get(j);
 				String callersName = call.callersName;
 				int callersNumber = call.callersNumber;
 				System.out.printf("Missed call from: %s (%d) \n", callersName, callersNumber);
@@ -30,36 +37,30 @@ public class ReturnList {
 				/***************************************************************************************/
 			}
 		}
-		else{
-			/*Returns unchanged missedCalls list*/
-			listObjectMissedCalls = missedCalls;
-		}
-		if (missedNews.size() > 0 && mySelf.available == true){
-			for (int k = 0; k < missedNews.size(); k++){
+		
+		if (listObjectMissedNews.size() > 0 && mySelf.available == true){
+			for (int k = 0; k < listObjectMissedNews.size(); k++){
 				/*If there are missed news and the user is avaliable then shows the missed news
 				 *At the end, it will delete all missed news from the list, therefore it is only shown
 				 *when the user changes his status*/
-				IncomingNews missedNew = (IncomingNews) missedNews.get(k);
+				IncomingNews missedNew = (IncomingNews) listObjectMissedNews.get(k);
 				String title = missedNew.title;
 				System.out.printf("Missed News: %s \n", title);
 				listObjectMissedNews = new ArrayList<Object>();
 				/****************************************************************************************/
 			}
 		}
-		else{
-			/*Returns unchanged missedCalls list*/
-			listObjectMissedNews = missedNews;
-		}
+		
 	}
 	
-	public static void ifNews(List<String> news, Random rand, User mySelf, List<Object> missedNews, Clip soundClipCameraShutter){
-		if (news.size() > 0){
+	public static void ifNews(Random rand, User mySelf, Clip soundClipCameraShutter){
+		if (listStringNews.size() > 0){
 			/*If there are still avaliable news, then it picks one randomly. Then, the
 			 *picked news is deleted from the main news list to avoid getting duplicates*/
-			int randomNews = rand.nextInt(news.size());
+			int randomNews = rand.nextInt(listStringNews.size());
 			IncomingNews newNew = new IncomingNews();
-			newNew.newNews(news.get(randomNews), false); // false meant it had not yet been read. However, this is just a leftover and is unused. It might be important in a future update 
-			news.remove(randomNews); // Avoid getting repeated news
+			newNew.newNews(listStringNews.get(randomNews), false); // false meant it had not yet been read. However, this is just a leftover and is unused. It might be important in a future update 
+			listStringNews.remove(randomNews); // Avoid getting repeated news
 			
 			if (mySelf.available == true){
 				/*If the user is available, then it will be shown. */
@@ -73,19 +74,17 @@ public class ReturnList {
 			}
 			else{
 				/*If user is busy, then it will be added to missed news to show them later.*/
-				missedNews.add(newNew);
+				listObjectMissedNews.add(newNew);
 				/***************************************************************************/
 			}
 			/*****************************************************************************/
 		}
-	listStringNews = news; //Update list of news, after one of them might have been deleted
-	listObjectMissedNews = missedNews; //Update list of missed news, after there might have been added a new news
 	}
 	
-	public static void ifCall(Random rand, List<Object> calls, User mySelf, List<Object> missedCalls, Clip soundClipRing){
+	public static void ifCall(Random rand, User mySelf, Clip soundClipRing){
 		/*Select incoming call from list of possible calls*/
-		int randomCalls = rand.nextInt(calls.size());
-		IncomingCalls newCall = (IncomingCalls) calls.get(randomCalls);
+		int randomCalls = rand.nextInt(listObjectCalls.size());
+		IncomingCalls newCall = (IncomingCalls) listObjectCalls.get(randomCalls);
 		/**************************************************/
 		
 		if (mySelf.available == true){//Notify the user of incoming call if he is avaliable
@@ -99,13 +98,12 @@ public class ReturnList {
 		else{
 			/*Don't notify the user of an incoming call if he is busy
 			 *Add the call to the missed calls list instead*/
-			missedCalls.add(newCall);
-			listObjectMissedCalls = missedCalls;
+			listObjectMissedCalls.add(newCall);
 			/*****************************************************/
 		}
 	}
 	
-	public void CreateCalls(ReturnList retList){
+	public void CreateCalls(){
 		String fileName = "src\\assistant\\calls.txt";
         String line = null;
         List<Object> calls = new ArrayList<Object>();
@@ -125,7 +123,7 @@ public class ReturnList {
             	calls.add(new IncomingCalls(callerNumber, caller));//Create an Object with the new 
             	/*information and add it to the list of calls*/
             }   
-            retList.listObjectCalls = calls;
+            listObjectCalls = calls;
             bufferedReader.close();    
             /***************************************************/
         }
@@ -145,7 +143,7 @@ public class ReturnList {
         /*********************/
     }
 	
-	public void CreateNews(ReturnList retList){
+	public void CreateNews(){
 		String fileName = "src\\assistant\\news.txt";
         String line = null;
         List<String> news = new ArrayList<String>();
