@@ -1,104 +1,161 @@
 package assistant;
-import java.net.URL;
 import java.util.Random;
 import java.util.Scanner;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
- 
 public class Assistant {
 	
-	//Sounds which shall be used
-	String fileRing = "default/sounds/electronics023.wav"; //Ringtone
-	String fileCameraShutter = "default/sounds/electronics026.wav"; //Camera Shuttle sound to be used when there are new news (What is the sound of news anyway?)
-	static Clip soundClipRing;
-	static Clip soundClipCameraShutter;  
+	public static int beginTaskTime(Scanner reader){
+		System.out.print("Starting time: ");
+		int taskBegin = reader.nextInt();
+		if (taskBegin < 0 || taskBegin > 23){
+			System.out.println("Your time is not valid!\nPlease try again!");
+			taskBegin = beginTaskTime(reader);
+		}
+		return taskBegin;
+	}
 	
-	public Assistant(){
-		try {
-			/*Check the sounds exist and there won't have problems */
-			   URL url = this.getClass().getClassLoader().getResource(fileRing);
-			   if (url == null) {
-			      System.err.println("Couldn't find file: " + fileRing);
-			   } else {
-			      AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
-			      soundClipRing = AudioSystem.getClip();
-			      soundClipRing.open(audioIn);
-			   }
-			       
-			   url = this.getClass().getClassLoader().getResource(fileCameraShutter);
-			   if (url == null) {
-			      System.err.println("Couldn't find file: " + fileCameraShutter);
-			   } else {
-			      AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
-			      soundClipCameraShutter = AudioSystem.getClip();
-			      soundClipCameraShutter.open(audioIn);
-			   }
-			} catch (UnsupportedAudioFileException e) {
-			   System.err.println("Audio Format not supported!");
-			} catch (Exception e) {
-			   e.printStackTrace();
-			}
+	public static int endTaskTime(Scanner reader){
+		System.out.print("End time: ");
+		int taskEnd = reader.nextInt();
+		if (taskEnd < 0 || taskEnd > 23){
+			System.out.println("Your time is not valid!\nPlease try again!");
+			taskEnd = endTaskTime(reader);
+		}
+		return taskEnd;
+	}
+	
+	public static int startDay(Scanner reader, int hour, int sHour, int day){
+		System.out.print("Start Day: ");
+		int SDay = reader.nextInt();
+		if (SDay == day && sHour <= hour){
+			System.out.println("Please insert a valid day");
+			SDay = startDay(reader, hour, sHour, day);
+		}
+		return SDay;
+	}
+	
+	public static int endDay(Scanner reader, int SDay, int sHour, int eHour){
+		System.out.print("End Day: ");
+		int EDay = reader.nextInt();
+		if (SDay > EDay || (SDay == EDay && sHour > eHour)){
+			System.out.println("Please insert a valid date");
+			EDay = endDay(reader, SDay, sHour, eHour);
+		}
+		return EDay;
 	}
 	
 	public static void main(String[] args){
-		int numberOfCicles = Integer.parseInt(args[0]);
-		new Assistant();
 		Random rand = new Random();
 		User mySelf = new User();
 		Scanner reader = new Scanner(System.in);
 		ReturnList retList = new ReturnList();
-		
-		
-		
+		Sound sound = new Sound();
+		int hour = 23;
+		int day = 0;
+		boolean programRunning = true;
 		/*Creates Lists of both calls and news for the assistant */
 		retList.CreateCalls();
 		retList.CreateNews();
 		/*********************************************************/
 		
-		for(int i = 0; i < numberOfCicles; i++){
-			/*Checks for missed calls and missed news. If the user is
-			 * avaliable then the assistant will show all missed items
-			 * and then delete them, so it doesn't get printed more 
-			 * than once*/ 
-			retList.checkMissed(mySelf);
-			/**********************************************************/
-			
-			/*Asks the user if he is still busy or avaliable and changes the status 
-			 * of user according to the user input*/
-			mySelf.checkStatus(reader);
-			/*********************************************************/
-			
-			/*Generates a random number from 0 to 2. 
-			 * 0 is there are new news
-			 * 1 is there are new calls
-			 * 2 is nothing happened in this iteration 
-			 * 
-			 * Check what random number we got and act accordingly*/
-			int randomN = rand.nextInt(3);// 0 -> News; 1 -> Calls; 2 -> Nothing
-			if (randomN == 0){//News
-				/*There are new news
-				 *Show new news
-				 *If user is busy, then add it to missed News and update that list instead*/
-				ReturnList.ifNews(rand, mySelf, soundClipCameraShutter);
-					
-				/***************************************************************************/
+		while(programRunning){
+			hour++;
+			if (hour > 23){
+				hour = 0;
+				day += 1;
 			}
-			else if (randomN == 1){//Calls
-				/*There are new calls
-				 *If the user is busy, add the call to missed calls and update the list*/
-				ReturnList.ifCall(rand, mySelf, soundClipRing);
-				/***********************************************************************/
+			String th = "th";
+			if (day == 11 || day == 12 || day == 13){
+				th = "th";
+			}else if (day == 1 || day % 10 == 1){// Program won't run for over a hundred days... right?
+				th = "st";
+			}else if (day == 2 || day % 10 == 2){
+				th = "nd";
+			}else if (day == 3 || day % 3 == 3){
+				th = "rd";
 			}
-			else{
+			System.out.println("Currently it's " + hour + ":00 of the " + day + th + " day");
+			
+			
+			if (!mySelf.checkActivity()){
+				
+				retList.checkFutureTask(day, hour);
+				
 				if (mySelf.currentStatus()){
-					System.out.println("Nothing happened in this itteration.");
+					System.out.println("You are currently avaliable");
+					System.out.println("[1] -> Press 1 to change your status\n"
+									+ "[2] -> Press 2 to create a new task\n"
+									+ "[3] -> press 3 to do nothing"
+									+ "[0] -> Press 0 to exit");
+					int userAnswer = reader.nextInt();
+					if (userAnswer == 1){
+						mySelf.changeStatus();
+					}
+					else if(userAnswer == 2){
+						System.out.print("Task Title: ");
+						String title= reader.toString();
+						int taskBegin = beginTaskTime(reader);
+						int taskEnd = endTaskTime(reader);
+						int sDay = startDay(reader, hour, taskBegin, day);
+						int eDay = endDay(reader, sDay, taskBegin, taskEnd);
+						//Avoid overlaping tasks needs to be added 
+						
+						Task newtask = new Task(title, taskBegin, taskEnd, sDay, eDay);
+						retList.addTask(newtask);
+					}
+					else if(userAnswer == 0){
+						programRunning = false;
+					}
+				}
+				else{
+					System.out.println("You are currently busy");
+					System.out.println("[1] -> Press 1 to change your status\n"
+									+ "[2] -> Press 2 to do nothing");
+					int userAnswer = reader.nextInt();
+					if (userAnswer == 1){
+						mySelf.changeStatus();
+						}
+					}
+				}
+					
+					
+				if (programRunning){
+					/*Checks for missed calls and missed news. If the user is
+					 * Available then the assistant will show all missed items
+					 * and then delete them, so it doesn't get printed more 
+					 * than once*/ 
+					retList.checkMissed(mySelf);
+					/**********************************************************/
+				
+				
+					/*Generates a random number from 0 to 2. 
+					 * 0 is there are new news
+					 * 1 is there are new calls
+					 * 2 is nothing happened in this iteration 
+					 * 
+					 * Check what random number we got and act accordingly*/
+					int randomN = rand.nextInt(3);// 0 -> News; 1 -> Calls; 2 -> Nothing
+					if (randomN == 0){//News
+						/*There are new news
+						 *Show new news
+						 *If user is busy, then add it to missed News and update that list instead*/
+						retList.ifNews(rand, mySelf, sound);
+					
+						/***************************************************************************/
+					}
+					else if (randomN == 1){//Calls
+						/*There are new calls
+						 *If the user is busy, add the call to missed calls and update the list*/
+						retList.ifCall(rand, mySelf, sound);
+						/***********************************************************************/
+					}
+					else{
+						if (mySelf.currentStatus()){
+							System.out.println("Nothing happened in this itteration.");
+						}
+					}
 				}
 			}
-		}
 		/*Notify about last iteration so it doesn't end abruptly*/
 		System.out.printf("Thank you for using this assistant\nThe end");
 		reader.close();

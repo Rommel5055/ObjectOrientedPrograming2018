@@ -4,6 +4,8 @@ import java.util.Scanner;
 
 public class User {
 	private boolean available = true;
+	private boolean inActivity = false;
+	private String workingAt; // print you are currently working at: 
 	
 	public void changeStatus(){
 		if (available == true){
@@ -42,7 +44,9 @@ public class User {
 	public boolean currentStatus(){
 		return available;
 	}
-	
+	public boolean checkActivity(){
+		return inActivity;
+	}
 	
 	
 	
