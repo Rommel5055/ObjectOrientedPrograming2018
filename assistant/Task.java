@@ -13,8 +13,8 @@ public class Task {
 		this.name = taskname;
 		this.startDay = SDay;
 		this.endDay = EDay;
-		this.start = starts;
-		this.end = ends;
+		this.start = starts;//hour
+		this.end = ends;//hour
 	}
 	
 	public int getSDay(){

@@ -13,6 +13,8 @@ public class ReturnList {
 	private List<Object> listObjectCalls;
 	private List<Object> listObjectMissedCalls;
 	private List<Object> listObjectTasks;
+	private List<Object> listObjectTasksInProgress;
+	private List<Object> listObjectTasksFinished;
 	/**************************************************/
 	public ReturnList(){
 		this.listObjectMissedNews = new ArrayList<Object>();
@@ -20,11 +22,12 @@ public class ReturnList {
 		this.listObjectCalls = new ArrayList<Object>();
 		this.listObjectMissedCalls = new ArrayList<Object>();
 		this.listObjectTasks = new ArrayList<Object>();
+		this.listObjectTasksInProgress = new ArrayList<Object>();
+		this.listObjectTasksFinished = new ArrayList<Object>();
 	}
 	
 	public void checkMissed(User mySelf){
-		if ((this.listObjectMissedCalls.size() > 0) &&
-				mySelf.currentStatus() == true){
+		if ((this.listObjectMissedCalls.size() > 0) && mySelf.currentStatus() == true){
 			for (int j = 0; j < this.listObjectMissedCalls.size(); j++){
 				/*If there are missed calls and the user is avaliable then shows the missed calls
 				 *At the end, it will delete all missed calls from the list, therefore it is only shown
@@ -33,9 +36,9 @@ public class ReturnList {
 				String callersName = call.getName();
 				int callersNumber = call.getNumber();
 				System.out.printf("Missed call from: %s (%d) \n", callersName, callersNumber);
-				this.listObjectMissedCalls = new ArrayList<Object>();
 				/***************************************************************************************/
 			}
+			this.listObjectMissedCalls = new ArrayList<Object>();
 		}
 		
 		if (this.listObjectMissedNews.size() > 0 && mySelf.currentStatus() == true){
@@ -46,9 +49,9 @@ public class ReturnList {
 				IncomingNews missedNew = (IncomingNews) this.listObjectMissedNews.get(k);
 				String title = missedNew.getTitle();
 				System.out.printf("Missed News: %s \n", title);
-				this.listObjectMissedNews = new ArrayList<Object>();
 				/****************************************************************************************/
 			}
+			this.listObjectMissedNews = new ArrayList<Object>();
 		}
 		
 	}
@@ -169,6 +172,37 @@ public class ReturnList {
         /********************/
     }
 	
+	public void startTask(int day, int hour, User user){
+		for (int i = 0; i < this.listObjectTasks.size(); i++){
+			Task task = (Task) listObjectTasks.get(i);
+			if (task.getSDay() == day && task.getStart() == hour && task.getStatus() == "Scheduled"){
+				task.setStatus(1);
+				if (user.currentStatus()){
+					user.changeStatus();
+				}
+				user.changeActivity(task.getName());
+				this.listObjectTasksInProgress.add(task);
+				this.listObjectTasks.remove(i); //move to in progress list
+				System.out.println("You have " + task.getName() + " now. Your status has changed to busy.");
+			}
+		}
+	}
+	
+	public boolean endTask(int day, int hour, User user){
+		for (int i = 0; i < this.listObjectTasksInProgress.size(); i++){// should be just one, for just in case
+			Task task = (Task) listObjectTasksInProgress.get(i);
+			if (task.getEDay() == day && task.getEnd() == hour && task.getStatus() == "InProgress"){
+				task.setStatus(2);
+				user.changeStatus();
+				user.changeActivity("");
+				this.listObjectTasksFinished.add(task);
+				this.listObjectTasksInProgress.remove(i);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void checkFutureTask(int day, int hour){
 		int h = 0;
 		int d = 0;
@@ -178,6 +212,7 @@ public class ReturnList {
 		}
 		else{
 			h = hour + 1;
+			d = day;
 		}
 		for (int i = 0; i < this.listObjectTasks.size(); i++){
 			Task task = (Task) listObjectTasks.get(i);

@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class User {
 	private boolean available = true;
 	private boolean inActivity = false;
-	private String workingAt; // print you are currently working at: 
+	private String workingAt = ""; // you are currently working at: 
 	
 	public void changeStatus(){
 		if (available == true){
@@ -13,6 +13,21 @@ public class User {
 		}
 		else{
 			available = true;
+		}
+	}
+	
+	public void changeActivity(String activity){
+		if (this.inActivity == true){
+			this.inActivity = false;
+		}
+		else{
+			this.inActivity = true;
+		}
+		if(this.workingAt == ""){
+			this.workingAt = activity;
+		}
+		else{
+			this.workingAt = "";
 		}
 	}
 	
@@ -46,6 +61,9 @@ public class User {
 	}
 	public boolean checkActivity(){
 		return inActivity;
+	}
+	public String getActivity(){
+		return this.workingAt;
 	}
 	
 	

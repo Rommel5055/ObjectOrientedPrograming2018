@@ -59,6 +59,7 @@ public class Assistant {
 		/*********************************************************/
 		
 		while(programRunning){
+			System.out.println("-----------------------------------------------");
 			hour++;
 			if (hour > 23){
 				hour = 0;
@@ -76,16 +77,22 @@ public class Assistant {
 			}
 			System.out.println("Currently it's " + hour + ":00 of the " + day + th + " day");
 			
-			
-			if (!mySelf.checkActivity()){
+			if (mySelf.checkActivity()){
+				boolean taskEnd = retList.endTask(day, hour, mySelf);
+				if (!taskEnd){
+					System.out.println("You are at " + mySelf.getActivity() + " right now!");
+				}
+			}
+			if (!mySelf.checkActivity()){ // Not else if because I want it to enter again
 				
 				retList.checkFutureTask(day, hour);
+				retList.startTask(day, hour, mySelf);  // might change the result of checkactivity()
 				
-				if (mySelf.currentStatus()){
+				if (mySelf.currentStatus() && !mySelf.checkActivity()){
 					System.out.println("You are currently avaliable");
 					System.out.println("[1] -> Press 1 to change your status\n"
 									+ "[2] -> Press 2 to create a new task\n"
-									+ "[3] -> press 3 to do nothing"
+									+ "[3] -> press 3 to do nothing\n"
 									+ "[0] -> Press 0 to exit");
 					int userAnswer = reader.nextInt();
 					if (userAnswer == 1){
@@ -93,7 +100,7 @@ public class Assistant {
 					}
 					else if(userAnswer == 2){
 						System.out.print("Task Title: ");
-						String title= reader.toString();
+						String title= reader.next();
 						int taskBegin = beginTaskTime(reader);
 						int taskEnd = endTaskTime(reader);
 						int sDay = startDay(reader, hour, taskBegin, day);
@@ -107,7 +114,7 @@ public class Assistant {
 						programRunning = false;
 					}
 				}
-				else{
+				else if (!mySelf.checkActivity()){
 					System.out.println("You are currently busy");
 					System.out.println("[1] -> Press 1 to change your status\n"
 									+ "[2] -> Press 2 to do nothing");
@@ -117,6 +124,8 @@ public class Assistant {
 						}
 					}
 				}
+			
+			
 					
 					
 				if (programRunning){
