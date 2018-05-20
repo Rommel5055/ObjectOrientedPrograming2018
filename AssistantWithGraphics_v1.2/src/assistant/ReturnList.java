@@ -26,7 +26,7 @@ public class ReturnList {
 		this.listObjectTasksFinished = new ArrayList<Object>();
 	}
 	
-	public void checkMissed(User mySelf){
+	public String checkMissedCalls(User mySelf, String callsFeed){
 		if ((this.listObjectMissedCalls.size() > 0) && mySelf.currentStatus() == true){
 			for (int j = 0; j < this.listObjectMissedCalls.size(); j++){
 				/*If there are missed calls and the user is avaliable then shows the missed calls
@@ -35,12 +35,15 @@ public class ReturnList {
 				IncomingCalls call = (IncomingCalls) this.listObjectMissedCalls.get(j);
 				String callersName = call.getName();
 				int callersNumber = call.getNumber();
-				System.out.printf("Missed call from: %s (%d) \n", callersName, callersNumber);
+				callsFeed = callsFeed + "Missed call from: " + callersName + "(" + callersNumber + ") \n";
 				/***************************************************************************************/
 			}
 			this.listObjectMissedCalls = new ArrayList<Object>();
 		}
+		return callsFeed;
+	}
 		
+	public String checkMissedNews(User mySelf, String newsFeed){
 		if (this.listObjectMissedNews.size() > 0 && mySelf.currentStatus() == true){
 			for (int k = 0; k < this.listObjectMissedNews.size(); k++){
 				/*If there are missed news and the user is avaliable then shows the missed news
@@ -48,15 +51,16 @@ public class ReturnList {
 				 *when the user changes his status*/
 				IncomingNews missedNew = (IncomingNews) this.listObjectMissedNews.get(k);
 				String title = missedNew.getTitle();
-				System.out.printf("Missed News: %s \n", title);
+				newsFeed = newsFeed + "Missed News:  "+ title +  "\n";
 				/****************************************************************************************/
 			}
 			this.listObjectMissedNews = new ArrayList<Object>();
 		}
+		return newsFeed;
 		
 	}
 	
-	public void ifNews(Random rand, User mySelf, Sound sound){
+	public String ifNews(Random rand, User mySelf, Sound sound, String newsFeed){
 		if (this.listStringNews.size() > 0){
 			/*If there are still avaliable news, then it picks one randomly. Then, the
 			 *picked news is deleted from the main news list to avoid getting duplicates*/
@@ -66,8 +70,7 @@ public class ReturnList {
 			
 			if (mySelf.currentStatus() == true){
 				/*If the user is available, then it will be shown. */
-				System.out.printf("Breaking News!\n");
-				System.out.printf("%s \n", newNew.getTitle());
+				newsFeed = newsFeed + "Breaking News!\n" + newNew.getTitle() + "\n\n";
 				sound.soundNews();
 				/**************************************************/
 			}
@@ -78,16 +81,17 @@ public class ReturnList {
 			}
 			/*****************************************************************************/
 		}
+		return newsFeed;
 	}
 	
-	public void ifCall(Random rand, User mySelf, Sound sound){
+	public String ifCall(Random rand, User mySelf, Sound sound, String callsFeed){
 		/*Select incoming call from list of possible calls*/
 		int randomCalls = rand.nextInt(this.listObjectCalls.size());
 		IncomingCalls newCall = (IncomingCalls) this.listObjectCalls.get(randomCalls);
 		/**************************************************/
 		
 		if (mySelf.currentStatus() == true){//Notify the user of incoming call if he is avaliable
-			System.out.printf("%s (%d) is calling. \n", (String)newCall.getName(), (int)newCall.getNumber());
+			callsFeed = callsFeed + (String)newCall.getName() + " (" + (int)newCall.getNumber() + ") is calling. \n\n";
 			sound.soundCalls();
 		} 
 		else{
@@ -96,6 +100,7 @@ public class ReturnList {
 			this.listObjectMissedCalls.add(newCall);
 			/*****************************************************/
 		}
+		return callsFeed;
 	}
 	
 	public void CreateCalls(){
