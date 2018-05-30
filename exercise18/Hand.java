@@ -2,7 +2,7 @@ package exercise18;
 /**
  * A hand of playing cards.
  */
-public class Hand extends CardCollection {
+public class Hand extends EightsCardCollection {
 
     /**
      * Constructs an empty hand.

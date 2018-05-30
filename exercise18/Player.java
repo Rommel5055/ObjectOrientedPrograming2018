@@ -5,13 +5,13 @@ package exercise18;
 public class Player {
 
     private String name;
-    private Hand hand;
+    protected Hand hand;
 
     /**
      * Constructs a player with an empty hand.
      */
     public Player(String name) {
-        this.name = name;
+    	this.name = name;
         this.hand = new Hand(name);
     }
 
@@ -64,6 +64,9 @@ public class Player {
                 return card;
             }
             hand.addCard(card);
+            if (hand.size() > 54){
+            	System.out.println("Errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+            }
         }
     }
 

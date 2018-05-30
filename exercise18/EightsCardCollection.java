@@ -3,48 +3,32 @@ package exercise18;
 import java.util.ArrayList;
 import java.util.Random;
 
-/**
- * A collection of playing cards.
- */
-public class CardCollection {
-
-    protected String label;
-    protected ArrayList<Card> cards;
-    protected Random rand = new Random();
-
-    /**
-     * Constructs an empty collection.
-     */
-    public CardCollection(String label) {
-        this.label = label;
-        this.cards = new ArrayList<Card>();
-    }
-
-    /**
-     * Returns the label of the card collection.
-     */
-    public String getLabel() {
-        return label;
-    }
-
+public class EightsCardCollection extends CardCollection{
+	private ArrayList<EightsCard> eightCards;
+	
+	public EightsCardCollection(String label) {
+		super(label);
+		// TODO Auto-generated constructor stub
+		eightCards = new ArrayList<EightsCard>();
+	}
     /**
      * Adds the given card to the collection.
      */
-    public void addCard(Card card) {
-    	cards.add(card);
+    public void addCard(EightsCard card) {
+    	eightCards.add(card);
     }
 
     /**
      * Removes and returns the card with the given index.
      */
-    public Card popCard(int i) {
-        return cards.remove(i);
+    public EightsCard popCard(int i) {
+        return eightCards.remove(i);
     }
 
     /**
      * Removes and returns the last card.
      */
-    public Card popCard() {
+    public EightsCard popCard() {
         int i = size() - 1;
         return popCard(i);
     }
@@ -53,22 +37,22 @@ public class CardCollection {
      * Returns the number of cards.
      */
     public int size() {
-        return cards.size();
+        return eightCards.size();
     }
 
     /**
      * True if the collection is empty, false otherwise.
      */
     public boolean empty() {
-        return cards.size() == 0;
+        return eightCards.size() == 0;
     }
 
     /**
      * Moves n cards from this collection to the given collection.
      */
-    public void deal(CardCollection that, int n) {
+    public void deal(EightsCardCollection that, int n) {
         for (int i = 0; i < n; i++) {
-            Card card = popCard();
+            EightsCard card = popCard();
             that.addCard(card);
         }
     }
@@ -76,7 +60,7 @@ public class CardCollection {
     /**
      * Moves all remaining cards to the given collection.
      */
-    public void dealAll(CardCollection that) {
+    public void dealAll(EightsCardCollection that) {
         int n = size();
         deal(that, n);
     }
@@ -84,40 +68,35 @@ public class CardCollection {
     /**
      * Returns the card with the given index.
      */
-    public Card getCard(int i) {
-        return cards.get(i);
+    public EightsCard getECard(int i) {
+        return eightCards.get(i);
     }
 
     /**
      * Returns the last card.
      */
-    public Card last() {
+    public EightsCard last() {
         int i = size() - 1;
-        return cards.get(i);
+        return eightCards.get(i);
     }
 
     /**
      * Swaps the cards at indexes i and j.
      */
     public void swapCards(int i, int j) {
-        Card temp = cards.get(i);
-        cards.set(i, cards.get(j));
-        cards.set(j, temp);
+        EightsCard temp = eightCards.get(i);
+        eightCards.set(i, eightCards.get(j));
+        eightCards.set(j, temp);
     }
 
     /**
      * Randomly permute the cards.
      */
     
-    public int randomInt(int low, int high) {
-        int randomN = rand.nextInt(high + 1) + low;
-    	return randomN;
-    }
-    
     public void shuffle() {
-        for (int i = 0; i < cards.size(); i++){
-    		int random1 = randomInt(0, cards.size()-1);
-    		int random2 = randomInt(0, cards.size()-1);
+        for (int i = 0; i < eightCards.size(); i++){
+    		int random1 = randomInt(0, eightCards.size()-1);
+    		int random2 = randomInt(0, eightCards.size()-1);
     		if (random1 < random2){
     			swapCards(random1, random2);
     		}
@@ -136,7 +115,7 @@ public class CardCollection {
      * Returns a string representation of the card collection.
      */
     public String toString() {
-        return label + ": " + cards.toString();
+        return label + ": " + eightCards.toString();
     }
 
 }
