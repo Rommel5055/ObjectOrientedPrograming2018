@@ -117,7 +117,7 @@ public class ReturnList {
 	}
 	
 	public void CreateCalls(){
-		String fileName = "src\\assistant\\calls.txt";
+		String fileName = "src\\default\\calls.txt";
         String line = null;
         List<IncomingCalls> calls = new ArrayList<IncomingCalls>();
         
